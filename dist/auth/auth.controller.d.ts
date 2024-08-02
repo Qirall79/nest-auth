@@ -5,10 +5,14 @@ import { Response } from "express";
 export declare class AuthController {
     private readonly authService;
     constructor(authService: AuthService);
-    login(req: any): Promise<ITokens>;
+    login(req: any, res: Response): Promise<{
+        user: any;
+    }>;
     signUp(data: CreateUserDto): Promise<ITokens>;
     googleLogin(): Promise<void>;
     googleCallback(req: any, res: Response): Promise<void>;
-    refresh(req: any): Promise<ITokens>;
-    logout(): Promise<void>;
+    refresh(req: any, res: Response): Promise<void>;
+    logout(res: Response): Promise<{
+        message: string;
+    }>;
 }

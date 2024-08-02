@@ -15,15 +15,28 @@ import { RtJwtAuthGuard } from "src/guards/jwt-rt.guard";
 import { AuthGuard } from "@nestjs/passport";
 import { Response } from "express";
 
+const COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: true,
+};
+
 @Controller("auth")
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @UseGuards(LocalAuthGuard)
   @Post("login")
-  async login(@Request() req): Promise<ITokens> {
+  async login(@Request() req, @Res({ passthrough: true }) res: Response) {
     const { email, id } = req.user;
-    return this.authService.getTokens({ id, email });
+    const { refreshToken, accessToken } = await this.authService.getTokens({
+      id,
+      email,
+    });
+    res.cookie("access_token", accessToken, COOKIE_OPTIONS);
+    res.cookie("refresh_token", refreshToken, COOKIE_OPTIONS);
+    return {
+      user: req.user,
+    };
   }
 
   @Post("signup")
@@ -46,27 +59,31 @@ export class AuthController {
       id,
       email,
     });
-    res.cookie("access_token", accessToken, {
-      httpOnly: true,
-      sameSite: false,
-      secure: false,
-    });
-    res.cookie("refresh_token", refreshToken, {
-      httpOnly: true,
-      sameSite: false,
-      secure: false,
-    });
+    res.cookie("access_token", accessToken, COOKIE_OPTIONS);
+    res.cookie("refresh_token", refreshToken, COOKIE_OPTIONS);
     res.redirect("http://localhost:3001/");
   }
 
   @UseGuards(RtJwtAuthGuard)
   @Get("refresh")
-  async refresh(@Request() req) {
-    return this.authService.refreshTokens(req.user.id);
+  async refresh(@Request() req, @Res({ passthrough: true }) res: Response) {
+    const { accessToken, refreshToken } = await this.authService.refreshTokens(
+      req.user.id
+    );
+    res.cookie("access_token", accessToken, COOKIE_OPTIONS);
+    res.cookie("refresh_token", refreshToken, COOKIE_OPTIONS);
+    // res.redirect("http://localhost:3001/");
+    res.send({
+      user: req.user,
+    });
   }
 
   @Get("logout")
-  async logout() {
-    return this.authService.logout();
+  async logout(@Res({ passthrough: true }) res: Response) {
+    res.clearCookie("access_token", COOKIE_OPTIONS);
+    res.clearCookie("refresh_token", COOKIE_OPTIONS);
+    return {
+      message: "logged out",
+    };
   }
 }

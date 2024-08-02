@@ -16,10 +16,18 @@ const jwt_1 = require("@nestjs/jwt");
 const passport_1 = require("@nestjs/passport");
 const passport_jwt_1 = require("passport-jwt");
 const prisma_service_1 = require("../prisma/prisma.service");
+const bcrypt = require("bcryptjs");
+const cookieExtractor = (req) => {
+    let jwt = null;
+    if (req && req.cookies) {
+        jwt = req.cookies["refresh_token"];
+    }
+    return jwt;
+};
 let RtJwtStrategy = class RtJwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy, "jwt-rt") {
     constructor(configService, prisma, jwtService) {
         super({
-            jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
+            jwtFromRequest: cookieExtractor,
             ignoreExpiration: false,
             secretOrKey: configService.get("RT_SECRET"),
             passReqToCallback: true,
@@ -29,7 +37,9 @@ let RtJwtStrategy = class RtJwtStrategy extends (0, passport_1.PassportStrategy)
         this.jwtService = jwtService;
     }
     async validate(req, payload) {
-        const refreshToken = req.headers.authorization.split(" ")[1];
+        const refreshToken = cookieExtractor(req);
+        if (!refreshToken)
+            throw new common_1.UnauthorizedException("invalid refresh token");
         const userId = payload.sub;
         const user = await this.prisma.user.findFirst({
             where: {
@@ -37,10 +47,8 @@ let RtJwtStrategy = class RtJwtStrategy extends (0, passport_1.PassportStrategy)
             },
         });
         if (!user || !user.hashedRefreshToken)
-            return null;
-        const isMatched = this.jwtService.sign(refreshToken, {
-            secret: this.configService.get("JWT_SECRET"),
-        }) === user.hashedRefreshToken;
+            throw new common_1.UnauthorizedException("invalid refresh token");
+        const isMatched = bcrypt.compareSync(refreshToken, user.hashedRefreshToken);
         if (!isMatched)
             return null;
         return { id: userId };

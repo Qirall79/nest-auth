@@ -7,8 +7,10 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @UseGuards(AtJwtAuthGuard)
-  @Get('current')
+  @Get("current")
   async getCurrentUser(@Request() req) {
+    console.log("hello");
+
     return {
       user: req.user,
     };

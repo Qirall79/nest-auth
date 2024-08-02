@@ -21,6 +21,7 @@ let UsersController = class UsersController {
         this.usersService = usersService;
     }
     async getCurrentUser(req) {
+        console.log("hello");
         return {
             user: req.user,
         };
@@ -29,7 +30,7 @@ let UsersController = class UsersController {
 exports.UsersController = UsersController;
 __decorate([
     (0, common_1.UseGuards)(jwt_at_guard_1.AtJwtAuthGuard),
-    (0, common_1.Get)('current'),
+    (0, common_1.Get)("current"),
     __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),

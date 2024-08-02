@@ -16,7 +16,6 @@ const passport_1 = require("@nestjs/passport");
 const passport_jwt_1 = require("passport-jwt");
 const cookieExtractor = (req) => {
     let jwt = null;
-    console.log(req);
     if (req && req.cookies) {
         jwt = req.cookies["access_token"];
     }

@@ -1,9 +1,20 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy, ExtractJwt } from "passport-jwt";
 import { PrismaService } from "src/prisma/prisma.service";
+import * as bcrypt from 'bcryptjs'
+
+const cookieExtractor = (req) => {
+  let jwt = null;
+
+  if (req && req.cookies) {
+    jwt = req.cookies["refresh_token"];
+  }
+
+  return jwt;
+};
 
 @Injectable()
 export class RtJwtStrategy extends PassportStrategy(Strategy, "jwt-rt") {
@@ -13,7 +24,7 @@ export class RtJwtStrategy extends PassportStrategy(Strategy, "jwt-rt") {
     private jwtService: JwtService
   ) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: cookieExtractor,
       ignoreExpiration: false,
       secretOrKey: configService.get("RT_SECRET"),
       passReqToCallback: true,
@@ -21,7 +32,8 @@ export class RtJwtStrategy extends PassportStrategy(Strategy, "jwt-rt") {
   }
 
   async validate(req: any, payload: any) {
-    const refreshToken = req.headers.authorization.split(" ")[1];
+    const refreshToken = cookieExtractor(req);
+    if (!refreshToken) throw new UnauthorizedException("invalid refresh token");
     const userId = payload.sub;
     const user = await this.prisma.user.findFirst({
       where: {
@@ -29,14 +41,13 @@ export class RtJwtStrategy extends PassportStrategy(Strategy, "jwt-rt") {
       },
     });
 
-    if (!user || !user.hashedRefreshToken) return null;
+    if (!user || !user.hashedRefreshToken)
+      throw new UnauthorizedException("invalid refresh token");
 
-    const isMatched =
-      this.jwtService.sign(refreshToken, {
-        secret: this.configService.get("JWT_SECRET"),
-      }) === user.hashedRefreshToken;
+    const isMatched = bcrypt.compareSync(refreshToken, user.hashedRefreshToken);
 
     if (!isMatched) return null;
+
     return { id: userId };
   }
 }

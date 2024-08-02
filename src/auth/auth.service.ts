@@ -5,6 +5,7 @@ import { CreateUserDto } from "src/dto/create-user.dto";
 import { PrismaService } from "src/prisma/prisma.service";
 import { ITokens } from "src/types";
 import { UsersService } from "src/users/users.service";
+import * as bcrypt from "bcryptjs";
 
 @Injectable()
 export class AuthService {
@@ -14,10 +15,6 @@ export class AuthService {
     private configService: ConfigService,
     private prisma: PrismaService
   ) {}
-
-  async login() {
-    // todo
-  }
 
   async signUp(data: CreateUserDto) {
     return await this.usersService.createUser(data);
@@ -30,11 +27,7 @@ export class AuthService {
       },
     });
 
-    return this.getTokens({ id, email: user.email });
-  }
-
-  async logout() {
-    // todo
+    return await this.getTokens({ id, email: user.email });
   }
 
   async getTokens(user: { id: string; email: string }): Promise<ITokens> {
@@ -46,7 +39,7 @@ export class AuthService {
       },
       {
         secret: this.configService.get("AT_SECRET"),
-        expiresIn: 60 * 15,
+        expiresIn: 60 * 5,
       }
     );
 
@@ -65,9 +58,7 @@ export class AuthService {
         id,
       },
       data: {
-        hashedRefreshToken: this.jwtService.sign(refreshToken, {
-          secret: this.configService.get("JWT_SECRET"),
-        }),
+        hashedRefreshToken: bcrypt.hashSync(refreshToken, 10),
       },
     });
 

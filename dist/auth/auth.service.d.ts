@@ -10,10 +10,8 @@ export declare class AuthService {
     private configService;
     private prisma;
     constructor(usersService: UsersService, jwtService: JwtService, configService: ConfigService, prisma: PrismaService);
-    login(): Promise<void>;
     signUp(data: CreateUserDto): Promise<ITokens>;
     refreshTokens(id: string): Promise<ITokens>;
-    logout(): Promise<void>;
     getTokens(user: {
         id: string;
         email: string;

@@ -6,7 +6,6 @@ import { Strategy, ExtractJwt } from "passport-jwt";
 const cookieExtractor = (req) => {
   let jwt = null;
 
-  console.log(req);
   if (req && req.cookies) {
     jwt = req.cookies["access_token"];
   }
