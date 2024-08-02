@@ -66,6 +66,22 @@ let UsersService = class UsersService {
             },
         });
     }
+    async upsertUser(data) {
+        const { email, name } = data;
+        const user = await this.prisma.user.findFirst({
+            where: {
+                email,
+            },
+        });
+        if (user)
+            return user;
+        return await this.prisma.user.create({
+            data: {
+                email,
+                name,
+            },
+        });
+    }
 };
 exports.UsersService = UsersService;
 exports.UsersService = UsersService = __decorate([

@@ -4,6 +4,7 @@ import {
   Get,
   Post,
   Request,
+  Res,
   UseGuards,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
@@ -11,6 +12,8 @@ import { CreateUserDto } from "src/dto/create-user.dto";
 import { ITokens } from "src/types";
 import { LocalAuthGuard } from "src/guards/local.guard";
 import { RtJwtAuthGuard } from "src/guards/jwt-rt.guard";
+import { AuthGuard } from "@nestjs/passport";
+import { Response } from "express";
 
 @Controller("auth")
 export class AuthController {
@@ -26,6 +29,34 @@ export class AuthController {
   @Post("signup")
   async signUp(@Body() data: CreateUserDto) {
     return this.authService.signUp(data);
+  }
+
+  @UseGuards(AuthGuard("google"))
+  @Get("google")
+  async googleLogin() {}
+
+  @UseGuards(AuthGuard("google"))
+  @Get("callback/google")
+  async googleCallback(
+    @Request() req,
+    @Res({ passthrough: true }) res: Response
+  ) {
+    const { email, id } = req.user;
+    const { accessToken, refreshToken } = await this.authService.getTokens({
+      id,
+      email,
+    });
+    res.cookie("access_token", accessToken, {
+      httpOnly: true,
+      sameSite: false,
+      secure: false,
+    });
+    res.cookie("refresh_token", refreshToken, {
+      httpOnly: true,
+      sameSite: false,
+      secure: false,
+    });
+    res.redirect("http://localhost:3001/");
   }
 
   @UseGuards(RtJwtAuthGuard)

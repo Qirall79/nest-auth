@@ -4,6 +4,7 @@ import { JwtService } from "@nestjs/jwt";
 import { User } from "@prisma/client";
 import { AuthService } from "src/auth/auth.service";
 import { CreateUserDto } from "src/dto/create-user.dto";
+import { UpsertUserDto } from "src/dto/upsert-user.dto";
 import { PrismaService } from "src/prisma/prisma.service";
 import { ITokens } from "src/types";
 
@@ -63,6 +64,23 @@ export class UsersService {
     return await this.prisma.user.findFirst({
       where: {
         email: email,
+      },
+    });
+  }
+
+  async upsertUser(data: UpsertUserDto) {
+    const { email, name } = data;
+    const user = await this.prisma.user.findFirst({
+      where: {
+        email,
+      },
+    });
+
+    if (user) return user;
+    return await this.prisma.user.create({
+      data: {
+        email,
+        name,
       },
     });
   }

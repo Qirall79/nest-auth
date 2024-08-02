@@ -7,10 +7,18 @@ import { UsersModule } from "src/users/users.module";
 import { PrismaService } from "src/prisma/prisma.service";
 import { AtJwtStrategy } from "src/strategies/jwt-at.strategy";
 import { RtJwtStrategy } from "src/strategies/jwt-rt.strategy";
+import { GoogleStrategy } from "src/strategies/google.strategy";
 
 @Module({
   imports: [PassportModule, UsersModule],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, AtJwtStrategy, RtJwtStrategy, PrismaService],
+  providers: [
+    AuthService,
+    LocalStrategy,
+    AtJwtStrategy,
+    RtJwtStrategy,
+    GoogleStrategy,
+    PrismaService,
+  ],
 })
 export class AuthModule {}

@@ -16,6 +16,7 @@ const users_module_1 = require("../users/users.module");
 const prisma_service_1 = require("../prisma/prisma.service");
 const jwt_at_strategy_1 = require("../strategies/jwt-at.strategy");
 const jwt_rt_strategy_1 = require("../strategies/jwt-rt.strategy");
+const google_strategy_1 = require("../strategies/google.strategy");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
@@ -23,7 +24,14 @@ exports.AuthModule = AuthModule = __decorate([
     (0, common_1.Module)({
         imports: [passport_1.PassportModule, users_module_1.UsersModule],
         controllers: [auth_controller_1.AuthController],
-        providers: [auth_service_1.AuthService, local_strategy_1.LocalStrategy, jwt_at_strategy_1.AtJwtStrategy, jwt_rt_strategy_1.RtJwtStrategy, prisma_service_1.PrismaService],
+        providers: [
+            auth_service_1.AuthService,
+            local_strategy_1.LocalStrategy,
+            jwt_at_strategy_1.AtJwtStrategy,
+            jwt_rt_strategy_1.RtJwtStrategy,
+            google_strategy_1.GoogleStrategy,
+            prisma_service_1.PrismaService,
+        ],
     })
 ], AuthModule);
 //# sourceMappingURL=auth.module.js.map

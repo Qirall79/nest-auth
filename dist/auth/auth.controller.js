@@ -18,6 +18,7 @@ const auth_service_1 = require("./auth.service");
 const create_user_dto_1 = require("../dto/create-user.dto");
 const local_guard_1 = require("../guards/local.guard");
 const jwt_rt_guard_1 = require("../guards/jwt-rt.guard");
+const passport_1 = require("@nestjs/passport");
 let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
@@ -28,6 +29,25 @@ let AuthController = class AuthController {
     }
     async signUp(data) {
         return this.authService.signUp(data);
+    }
+    async googleLogin() { }
+    async googleCallback(req, res) {
+        const { email, id } = req.user;
+        const { accessToken, refreshToken } = await this.authService.getTokens({
+            id,
+            email,
+        });
+        res.cookie("access_token", accessToken, {
+            httpOnly: true,
+            sameSite: false,
+            secure: false,
+        });
+        res.cookie("refresh_token", refreshToken, {
+            httpOnly: true,
+            sameSite: false,
+            secure: false,
+        });
+        res.redirect("http://localhost:3001/");
     }
     async refresh(req) {
         return this.authService.refreshTokens(req.user.id);
@@ -52,6 +72,22 @@ __decorate([
     __metadata("design:paramtypes", [create_user_dto_1.CreateUserDto]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "signUp", null);
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("google")),
+    (0, common_1.Get)("google"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "googleLogin", null);
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("google")),
+    (0, common_1.Get)("callback/google"),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Res)({ passthrough: true })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "googleCallback", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_rt_guard_1.RtJwtAuthGuard),
     (0, common_1.Get)("refresh"),

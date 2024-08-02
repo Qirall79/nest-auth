@@ -3,6 +3,7 @@ import { JwtService } from "@nestjs/jwt";
 import { User } from "@prisma/client";
 import { AuthService } from "src/auth/auth.service";
 import { CreateUserDto } from "src/dto/create-user.dto";
+import { UpsertUserDto } from "src/dto/upsert-user.dto";
 import { PrismaService } from "src/prisma/prisma.service";
 import { ITokens } from "src/types";
 export declare class UsersService {
@@ -14,6 +15,13 @@ export declare class UsersService {
     createUser(data: CreateUserDto): Promise<ITokens>;
     validateUser(email: string, password: string): Promise<User>;
     findUser(email: string): Promise<{
+        id: string;
+        email: string;
+        name: string | null;
+        hashedPassword: string | null;
+        hashedRefreshToken: string | null;
+    }>;
+    upsertUser(data: UpsertUserDto): Promise<{
         id: string;
         email: string;
         name: string | null;
