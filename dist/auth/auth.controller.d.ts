@@ -5,9 +5,7 @@ import { Response } from "express";
 export declare class AuthController {
     private readonly authService;
     constructor(authService: AuthService);
-    login(req: any, res: Response): Promise<{
-        user: any;
-    }>;
+    login(req: any, res: Response): Promise<void>;
     signUp(data: CreateUserDto): Promise<ITokens>;
     googleLogin(): Promise<void>;
     googleCallback(req: any, res: Response): Promise<void>;

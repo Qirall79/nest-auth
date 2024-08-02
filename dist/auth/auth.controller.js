@@ -22,6 +22,7 @@ const passport_1 = require("@nestjs/passport");
 const COOKIE_OPTIONS = {
     httpOnly: true,
     secure: true,
+    sameSite: 'strict'
 };
 let AuthController = class AuthController {
     constructor(authService) {
@@ -33,11 +34,13 @@ let AuthController = class AuthController {
             id,
             email,
         });
+        res.clearCookie("access_token", COOKIE_OPTIONS);
+        res.clearCookie("refresh_token", COOKIE_OPTIONS);
         res.cookie("access_token", accessToken, COOKIE_OPTIONS);
         res.cookie("refresh_token", refreshToken, COOKIE_OPTIONS);
-        return {
+        res.send({
             user: req.user,
-        };
+        });
     }
     async signUp(data) {
         return this.authService.signUp(data);
@@ -49,12 +52,16 @@ let AuthController = class AuthController {
             id,
             email,
         });
+        res.clearCookie("access_token", COOKIE_OPTIONS);
+        res.clearCookie("refresh_token", COOKIE_OPTIONS);
         res.cookie("access_token", accessToken, COOKIE_OPTIONS);
         res.cookie("refresh_token", refreshToken, COOKIE_OPTIONS);
         res.redirect("http://localhost:3001/");
     }
     async refresh(req, res) {
         const { accessToken, refreshToken } = await this.authService.refreshTokens(req.user.id);
+        res.clearCookie("access_token", COOKIE_OPTIONS);
+        res.clearCookie("refresh_token", COOKIE_OPTIONS);
         res.cookie("access_token", accessToken, COOKIE_OPTIONS);
         res.cookie("refresh_token", refreshToken, COOKIE_OPTIONS);
         res.send({

@@ -39,7 +39,7 @@ export class AuthService {
       },
       {
         secret: this.configService.get("AT_SECRET"),
-        expiresIn: 60 * 5,
+        expiresIn: 10,
       }
     );
 

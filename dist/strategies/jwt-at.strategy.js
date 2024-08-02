@@ -31,6 +31,7 @@ let AtJwtStrategy = class AtJwtStrategy extends (0, passport_1.PassportStrategy)
         this.configService = configService;
     }
     async validate(payload) {
+        console.log("hello");
         return { userId: payload.sub, email: payload.email };
     }
 };

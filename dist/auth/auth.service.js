@@ -41,7 +41,7 @@ let AuthService = class AuthService {
             email,
         }, {
             secret: this.configService.get("AT_SECRET"),
-            expiresIn: 60 * 5,
+            expiresIn: 10,
         });
         const refreshToken = this.jwtService.sign({
             sub: id,

@@ -8,7 +8,8 @@ import * as bcrypt from 'bcryptjs'
 
 const cookieExtractor = (req) => {
   let jwt = null;
-
+  console.log(req.cookies);
+  
   if (req && req.cookies) {
     jwt = req.cookies["refresh_token"];
   }

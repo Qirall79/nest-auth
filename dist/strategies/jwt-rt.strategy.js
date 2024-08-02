@@ -19,6 +19,7 @@ const prisma_service_1 = require("../prisma/prisma.service");
 const bcrypt = require("bcryptjs");
 const cookieExtractor = (req) => {
     let jwt = null;
+    console.log(req.cookies);
     if (req && req.cookies) {
         jwt = req.cookies["refresh_token"];
     }

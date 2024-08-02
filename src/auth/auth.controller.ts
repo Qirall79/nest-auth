@@ -13,11 +13,12 @@ import { ITokens } from "src/types";
 import { LocalAuthGuard } from "src/guards/local.guard";
 import { RtJwtAuthGuard } from "src/guards/jwt-rt.guard";
 import { AuthGuard } from "@nestjs/passport";
-import { Response } from "express";
+import { CookieOptions, Response } from "express";
 
-const COOKIE_OPTIONS = {
+const COOKIE_OPTIONS: CookieOptions = {
   httpOnly: true,
   secure: true,
+  sameSite: 'strict'
 };
 
 @Controller("auth")
@@ -32,11 +33,13 @@ export class AuthController {
       id,
       email,
     });
+    res.clearCookie("access_token", COOKIE_OPTIONS);
+    res.clearCookie("refresh_token", COOKIE_OPTIONS);
     res.cookie("access_token", accessToken, COOKIE_OPTIONS);
     res.cookie("refresh_token", refreshToken, COOKIE_OPTIONS);
-    return {
+    res.send({
       user: req.user,
-    };
+    });
   }
 
   @Post("signup")
@@ -59,6 +62,8 @@ export class AuthController {
       id,
       email,
     });
+    res.clearCookie("access_token", COOKIE_OPTIONS);
+    res.clearCookie("refresh_token", COOKIE_OPTIONS);
     res.cookie("access_token", accessToken, COOKIE_OPTIONS);
     res.cookie("refresh_token", refreshToken, COOKIE_OPTIONS);
     res.redirect("http://localhost:3001/");
@@ -70,9 +75,10 @@ export class AuthController {
     const { accessToken, refreshToken } = await this.authService.refreshTokens(
       req.user.id
     );
+    res.clearCookie("access_token", COOKIE_OPTIONS);
+    res.clearCookie("refresh_token", COOKIE_OPTIONS);
     res.cookie("access_token", accessToken, COOKIE_OPTIONS);
     res.cookie("refresh_token", refreshToken, COOKIE_OPTIONS);
-    // res.redirect("http://localhost:3001/");
     res.send({
       user: req.user,
     });
