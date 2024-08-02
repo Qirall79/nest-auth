@@ -1,11 +1,11 @@
-import { Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { JwtService } from "@nestjs/jwt";
-import { CreateUserDto } from "src/dto/create-user.dto";
-import { PrismaService } from "src/prisma/prisma.service";
-import { ITokens } from "src/types";
-import { UsersService } from "src/users/users.service";
-import * as bcrypt from "bcryptjs";
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { CreateUserDto } from 'src/dto/create-user.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { ITokens } from 'src/types';
+import { UsersService } from 'src/users/users.service';
+import * as argon from 'argon2';
 
 @Injectable()
 export class AuthService {
@@ -38,7 +38,7 @@ export class AuthService {
         email,
       },
       {
-        secret: this.configService.get("AT_SECRET"),
+        secret: this.configService.get('AT_SECRET'),
         expiresIn: 10,
       }
     );
@@ -48,17 +48,17 @@ export class AuthService {
         sub: id,
       },
       {
-        secret: this.configService.get("RT_SECRET"),
-        expiresIn: "7d",
+        secret: this.configService.get('RT_SECRET'),
+        expiresIn: '7d',
       }
     );
 
-    await this.prisma.user.update({
+    await this.prisma.user.updateMany({
       where: {
         id,
       },
       data: {
-        hashedRefreshToken: bcrypt.hashSync(refreshToken, 10),
+        hashedRefreshToken: await argon.hash(refreshToken),
       },
     });
 
@@ -66,5 +66,16 @@ export class AuthService {
       accessToken,
       refreshToken,
     };
+  }
+
+  async revokeToken(userId: string) {
+    await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        hashedRefreshToken: null,
+      },
+    });
   }
 }

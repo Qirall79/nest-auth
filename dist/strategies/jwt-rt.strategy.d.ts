@@ -1,7 +1,7 @@
-import { ConfigService } from "@nestjs/config";
-import { JwtService } from "@nestjs/jwt";
-import { Strategy } from "passport-jwt";
-import { PrismaService } from "src/prisma/prisma.service";
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { Strategy } from 'passport-jwt';
+import { PrismaService } from 'src/prisma/prisma.service';
 declare const RtJwtStrategy_base: new (...args: any[]) => Strategy;
 export declare class RtJwtStrategy extends RtJwtStrategy_base {
     private configService;

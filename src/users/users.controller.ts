@@ -9,8 +9,6 @@ export class UsersController {
   @UseGuards(AtJwtAuthGuard)
   @Get("current")
   async getCurrentUser(@Request() req) {
-    console.log("hello");
-
     return {
       user: req.user,
     };

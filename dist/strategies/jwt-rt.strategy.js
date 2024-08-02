@@ -16,21 +16,20 @@ const jwt_1 = require("@nestjs/jwt");
 const passport_1 = require("@nestjs/passport");
 const passport_jwt_1 = require("passport-jwt");
 const prisma_service_1 = require("../prisma/prisma.service");
-const bcrypt = require("bcryptjs");
+const argon = require("argon2");
 const cookieExtractor = (req) => {
     let jwt = null;
-    console.log(req.cookies);
     if (req && req.cookies) {
-        jwt = req.cookies["refresh_token"];
+        jwt = req.cookies['refresh_token'];
     }
     return jwt;
 };
-let RtJwtStrategy = class RtJwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy, "jwt-rt") {
+let RtJwtStrategy = class RtJwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy, 'jwt-rt') {
     constructor(configService, prisma, jwtService) {
         super({
             jwtFromRequest: cookieExtractor,
             ignoreExpiration: false,
-            secretOrKey: configService.get("RT_SECRET"),
+            secretOrKey: configService.get('RT_SECRET'),
             passReqToCallback: true,
         });
         this.configService = configService;
@@ -40,7 +39,7 @@ let RtJwtStrategy = class RtJwtStrategy extends (0, passport_1.PassportStrategy)
     async validate(req, payload) {
         const refreshToken = cookieExtractor(req);
         if (!refreshToken)
-            throw new common_1.UnauthorizedException("invalid refresh token");
+            throw new common_1.UnauthorizedException('invalid refresh token');
         const userId = payload.sub;
         const user = await this.prisma.user.findFirst({
             where: {
@@ -48,8 +47,8 @@ let RtJwtStrategy = class RtJwtStrategy extends (0, passport_1.PassportStrategy)
             },
         });
         if (!user || !user.hashedRefreshToken)
-            throw new common_1.UnauthorizedException("invalid refresh token");
-        const isMatched = bcrypt.compareSync(refreshToken, user.hashedRefreshToken);
+            throw new common_1.UnauthorizedException('invalid refresh token');
+        const isMatched = argon.verify(user.hashedRefreshToken, refreshToken);
         if (!isMatched)
             return null;
         return { id: userId };

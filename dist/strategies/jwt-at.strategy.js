@@ -17,21 +17,20 @@ const passport_jwt_1 = require("passport-jwt");
 const cookieExtractor = (req) => {
     let jwt = null;
     if (req && req.cookies) {
-        jwt = req.cookies["access_token"];
+        jwt = req.cookies['access_token'];
     }
     return jwt;
 };
-let AtJwtStrategy = class AtJwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy, "jwt-at") {
+let AtJwtStrategy = class AtJwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy, 'jwt-at') {
     constructor(configService) {
         super({
             jwtFromRequest: cookieExtractor,
             ignoreExpiration: false,
-            secretOrKey: configService.get("AT_SECRET"),
+            secretOrKey: configService.get('AT_SECRET'),
         });
         this.configService = configService;
     }
     async validate(payload) {
-        console.log("hello");
         return { userId: payload.sub, email: payload.email };
     }
 };

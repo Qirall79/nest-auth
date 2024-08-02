@@ -1,7 +1,7 @@
-import { AuthService } from "./auth.service";
-import { CreateUserDto } from "src/dto/create-user.dto";
-import { ITokens } from "src/types";
-import { Response } from "express";
+import { AuthService } from './auth.service';
+import { CreateUserDto } from 'src/dto/create-user.dto';
+import { ITokens } from 'src/types';
+import { Response } from 'express';
 export declare class AuthController {
     private readonly authService;
     constructor(authService: AuthService);
@@ -10,7 +10,7 @@ export declare class AuthController {
     googleLogin(): Promise<void>;
     googleCallback(req: any, res: Response): Promise<void>;
     refresh(req: any, res: Response): Promise<void>;
-    logout(res: Response): Promise<{
+    logout(req: any, res: Response): Promise<{
         message: string;
     }>;
 }

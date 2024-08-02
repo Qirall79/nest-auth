@@ -15,7 +15,7 @@ const config_1 = require("@nestjs/config");
 const jwt_1 = require("@nestjs/jwt");
 const prisma_service_1 = require("../prisma/prisma.service");
 const users_service_1 = require("../users/users.service");
-const bcrypt = require("bcryptjs");
+const argon = require("argon2");
 let AuthService = class AuthService {
     constructor(usersService, jwtService, configService, prisma) {
         this.usersService = usersService;
@@ -40,27 +40,37 @@ let AuthService = class AuthService {
             sub: id,
             email,
         }, {
-            secret: this.configService.get("AT_SECRET"),
+            secret: this.configService.get('AT_SECRET'),
             expiresIn: 10,
         });
         const refreshToken = this.jwtService.sign({
             sub: id,
         }, {
-            secret: this.configService.get("RT_SECRET"),
-            expiresIn: "7d",
+            secret: this.configService.get('RT_SECRET'),
+            expiresIn: '7d',
         });
-        await this.prisma.user.update({
+        await this.prisma.user.updateMany({
             where: {
                 id,
             },
             data: {
-                hashedRefreshToken: bcrypt.hashSync(refreshToken, 10),
+                hashedRefreshToken: await argon.hash(refreshToken),
             },
         });
         return {
             accessToken,
             refreshToken,
         };
+    }
+    async revokeToken(userId) {
+        await this.prisma.user.update({
+            where: {
+                id: userId,
+            },
+            data: {
+                hashedRefreshToken: null,
+            },
+        });
     }
 };
 exports.AuthService = AuthService;

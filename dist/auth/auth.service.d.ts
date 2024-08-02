@@ -1,9 +1,9 @@
-import { ConfigService } from "@nestjs/config";
-import { JwtService } from "@nestjs/jwt";
-import { CreateUserDto } from "src/dto/create-user.dto";
-import { PrismaService } from "src/prisma/prisma.service";
-import { ITokens } from "src/types";
-import { UsersService } from "src/users/users.service";
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { CreateUserDto } from 'src/dto/create-user.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { ITokens } from 'src/types';
+import { UsersService } from 'src/users/users.service';
 export declare class AuthService {
     private usersService;
     private jwtService;
@@ -16,4 +16,5 @@ export declare class AuthService {
         id: string;
         email: string;
     }): Promise<ITokens>;
+    revokeToken(userId: string): Promise<void>;
 }

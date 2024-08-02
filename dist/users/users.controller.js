@@ -21,7 +21,6 @@ let UsersController = class UsersController {
         this.usersService = usersService;
     }
     async getCurrentUser(req) {
-        console.log("hello");
         return {
             user: req.user,
         };
