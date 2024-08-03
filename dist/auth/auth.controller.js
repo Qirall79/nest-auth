@@ -56,7 +56,7 @@ let AuthController = class AuthController {
         res.clearCookie('refresh_token', COOKIE_OPTIONS);
         res.cookie('access_token', accessToken, COOKIE_OPTIONS);
         res.cookie('refresh_token', refreshToken, COOKIE_OPTIONS);
-        res.redirect('http://localhost:3001/');
+        res.redirect('http://localhost:3001/server');
     }
     async refresh(req, res) {
         const { accessToken, refreshToken } = await this.authService.refreshTokens(req.user.id);
@@ -66,7 +66,7 @@ let AuthController = class AuthController {
             .cookie('access_token', accessToken, COOKIE_OPTIONS)
             .cookie('refresh_token', refreshToken, COOKIE_OPTIONS)
             .send({
-            user: req.user,
+            accessToken, refreshToken
         });
     }
     async logout(req, res) {

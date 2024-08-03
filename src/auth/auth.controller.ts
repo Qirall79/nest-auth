@@ -68,7 +68,7 @@ export class AuthController {
     res.clearCookie('refresh_token', COOKIE_OPTIONS);
     res.cookie('access_token', accessToken, COOKIE_OPTIONS);
     res.cookie('refresh_token', refreshToken, COOKIE_OPTIONS);
-    res.redirect('http://localhost:3001/');
+    res.redirect('http://localhost:3001/server');
   }
 
   @UseGuards(RtJwtAuthGuard)
@@ -84,7 +84,7 @@ export class AuthController {
       .cookie('access_token', accessToken, COOKIE_OPTIONS)
       .cookie('refresh_token', refreshToken, COOKIE_OPTIONS)
       .send({
-        user: req.user,
+        accessToken, refreshToken
       });
   }
 
