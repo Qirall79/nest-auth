@@ -8,6 +8,7 @@ import { PrismaService } from "src/prisma/prisma.service";
 import { AtJwtStrategy } from "src/strategies/jwt-at.strategy";
 import { RtJwtStrategy } from "src/strategies/jwt-rt.strategy";
 import { GoogleStrategy } from "src/strategies/google.strategy";
+import { FortyTwoStrategy } from "src/strategies/fortyTwo.strategy";
 
 @Module({
   imports: [PassportModule, UsersModule],
@@ -18,6 +19,7 @@ import { GoogleStrategy } from "src/strategies/google.strategy";
     AtJwtStrategy,
     RtJwtStrategy,
     GoogleStrategy,
+    FortyTwoStrategy,
     PrismaService,
   ],
 })

@@ -6,6 +6,8 @@ export declare class AuthController {
     constructor(authService: AuthService);
     login(req: any, res: Response): Promise<void>;
     signUp(data: CreateUserDto): Promise<import("../types").ITokens>;
+    fortyTwoLogin(): Promise<void>;
+    fortyTwoCallback(req: any, res: Response): Promise<void>;
     googleLogin(): Promise<void>;
     googleCallback(req: any, res: Response): Promise<void>;
     refresh(req: any, res: Response): Promise<void>;

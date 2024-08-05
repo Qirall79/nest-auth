@@ -52,6 +52,8 @@ let UsersService = class UsersService {
                 email,
             },
         });
+        if (!user)
+            return null;
         const isMatched = this.jwtService.sign(password, {
             secret: this.configService.get("JWT_SECRET"),
         }) === user.hashedPassword;

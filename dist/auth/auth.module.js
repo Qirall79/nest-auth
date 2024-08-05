@@ -17,6 +17,7 @@ const prisma_service_1 = require("../prisma/prisma.service");
 const jwt_at_strategy_1 = require("../strategies/jwt-at.strategy");
 const jwt_rt_strategy_1 = require("../strategies/jwt-rt.strategy");
 const google_strategy_1 = require("../strategies/google.strategy");
+const fortyTwo_strategy_1 = require("../strategies/fortyTwo.strategy");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
@@ -30,6 +31,7 @@ exports.AuthModule = AuthModule = __decorate([
             jwt_at_strategy_1.AtJwtStrategy,
             jwt_rt_strategy_1.RtJwtStrategy,
             google_strategy_1.GoogleStrategy,
+            fortyTwo_strategy_1.FortyTwoStrategy,
             prisma_service_1.PrismaService,
         ],
     })

@@ -44,6 +44,28 @@ export class AuthController {
     return this.authService.signUp(data);
   }
 
+  @UseGuards(AuthGuard("42"))
+  @Get("42-school")
+  async fortyTwoLogin() {}
+
+  @UseGuards(AuthGuard("42"))
+  @Get("callback/42-school")
+  async fortyTwoCallback(
+    @Request() req,
+    @Res({ passthrough: true }) res: Response
+  ) {
+    const { email, id } = req.user;
+    const { accessToken, refreshToken } = await this.authService.getTokens({
+      id,
+      email,
+    });
+
+    res
+      .cookie("access_token", accessToken, COOKIE_OPTIONS)
+      .cookie("refresh_token", refreshToken, COOKIE_OPTIONS)
+      .redirect("http://localhost:3001/");
+  }
+
   @UseGuards(AuthGuard("google"))
   @Get("google")
   async googleLogin() {}
@@ -63,7 +85,7 @@ export class AuthController {
     res
       .cookie("access_token", accessToken, COOKIE_OPTIONS)
       .cookie("refresh_token", refreshToken, COOKIE_OPTIONS)
-      .redirect("http://localhost:3001/server");
+      .redirect("http://localhost:3001/");
   }
 
   @UseGuards(RtJwtAuthGuard)

@@ -43,6 +43,18 @@ let AuthController = class AuthController {
     async signUp(data) {
         return this.authService.signUp(data);
     }
+    async fortyTwoLogin() { }
+    async fortyTwoCallback(req, res) {
+        const { email, id } = req.user;
+        const { accessToken, refreshToken } = await this.authService.getTokens({
+            id,
+            email,
+        });
+        res
+            .cookie("access_token", accessToken, COOKIE_OPTIONS)
+            .cookie("refresh_token", refreshToken, COOKIE_OPTIONS)
+            .redirect("http://localhost:3001/");
+    }
     async googleLogin() { }
     async googleCallback(req, res) {
         const { email, id } = req.user;
@@ -53,7 +65,7 @@ let AuthController = class AuthController {
         res
             .cookie("access_token", accessToken, COOKIE_OPTIONS)
             .cookie("refresh_token", refreshToken, COOKIE_OPTIONS)
-            .redirect("http://localhost:3001/server");
+            .redirect("http://localhost:3001/");
     }
     async refresh(req, res) {
         const { accessToken, refreshToken } = await this.authService.refreshTokens(req.user.id);
@@ -91,6 +103,22 @@ __decorate([
     __metadata("design:paramtypes", [create_user_dto_1.CreateUserDto]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "signUp", null);
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("42")),
+    (0, common_1.Get)("42-school"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "fortyTwoLogin", null);
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("42")),
+    (0, common_1.Get)("callback/42-school"),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Res)({ passthrough: true })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "fortyTwoCallback", null);
 __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("google")),
     (0, common_1.Get)("google"),

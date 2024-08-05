@@ -51,6 +51,8 @@ export class UsersService {
       },
     });
 
+    if (!user) return null;
+
     const isMatched: boolean =
       this.jwtService.sign(password, {
         secret: this.configService.get("JWT_SECRET"),

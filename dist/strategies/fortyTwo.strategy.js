@@ -9,32 +9,35 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LocalStrategy = void 0;
+exports.FortyTwoStrategy = void 0;
 const common_1 = require("@nestjs/common");
+const config_1 = require("@nestjs/config");
 const passport_1 = require("@nestjs/passport");
-const passport_local_1 = require("passport-local");
 const users_service_1 = require("../users/users.service");
-let LocalStrategy = class LocalStrategy extends (0, passport_1.PassportStrategy)(passport_local_1.Strategy) {
-    constructor(usersService) {
+const { Strategy } = require("passport-42");
+let FortyTwoStrategy = class FortyTwoStrategy extends (0, passport_1.PassportStrategy)(Strategy, "42") {
+    constructor(configService, usersService) {
         super({
-            usernameField: "email",
+            clientID: configService.get("FORTYTWO_CLIENT_ID"),
+            clientSecret: configService.get("FORTYTWO_CLIENT_SECRET"),
+            callbackURL: "http://localhost:3000/api/auth/callback/42-school",
+            scope: [],
         });
+        this.configService = configService;
         this.usersService = usersService;
     }
-    async validate(username, password) {
-        const user = await this.usersService.validateUser(username, password);
-        if (!user)
-            throw new common_1.UnauthorizedException('invalid credentials');
-        return {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-        };
+    async validate(accessToken, refreshToken, profile) {
+        const user = await this.usersService.upsertUser({
+            email: profile.emails[0].value,
+            name: profile.displayName,
+        });
+        return user;
     }
 };
-exports.LocalStrategy = LocalStrategy;
-exports.LocalStrategy = LocalStrategy = __decorate([
+exports.FortyTwoStrategy = FortyTwoStrategy;
+exports.FortyTwoStrategy = FortyTwoStrategy = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [users_service_1.UsersService])
-], LocalStrategy);
-//# sourceMappingURL=local.strategy.js.map
+    __metadata("design:paramtypes", [config_1.ConfigService,
+        users_service_1.UsersService])
+], FortyTwoStrategy);
+//# sourceMappingURL=fortyTwo.strategy.js.map
