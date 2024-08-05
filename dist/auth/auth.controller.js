@@ -34,10 +34,8 @@ let AuthController = class AuthController {
             id,
             email,
         });
-        res.clearCookie('access_token', COOKIE_OPTIONS);
-        res.clearCookie('refresh_token', COOKIE_OPTIONS);
-        res.cookie('access_token', accessToken, COOKIE_OPTIONS);
-        res.cookie('refresh_token', refreshToken, COOKIE_OPTIONS);
+        res.cookie("access_token", accessToken, COOKIE_OPTIONS);
+        res.cookie("refresh_token", refreshToken, COOKIE_OPTIONS);
         res.send({
             user: req.user,
         });
@@ -52,37 +50,34 @@ let AuthController = class AuthController {
             id,
             email,
         });
-        res.clearCookie('access_token', COOKIE_OPTIONS);
-        res.clearCookie('refresh_token', COOKIE_OPTIONS);
-        res.cookie('access_token', accessToken, COOKIE_OPTIONS);
-        res.cookie('refresh_token', refreshToken, COOKIE_OPTIONS);
-        res.redirect('http://localhost:3001/server');
+        res
+            .cookie("access_token", accessToken, COOKIE_OPTIONS)
+            .cookie("refresh_token", refreshToken, COOKIE_OPTIONS)
+            .redirect("http://localhost:3001/server");
     }
     async refresh(req, res) {
         const { accessToken, refreshToken } = await this.authService.refreshTokens(req.user.id);
         res
-            .clearCookie('access_token', COOKIE_OPTIONS)
-            .clearCookie('refresh_token', COOKIE_OPTIONS)
-            .cookie('access_token', accessToken, COOKIE_OPTIONS)
-            .cookie('refresh_token', refreshToken, COOKIE_OPTIONS)
+            .cookie("access_token", accessToken, COOKIE_OPTIONS)
+            .cookie("refresh_token", refreshToken, COOKIE_OPTIONS)
             .send({
-            accessToken, refreshToken
+            message: "refreshed",
         });
     }
     async logout(req, res) {
         const userId = req.user.id;
         await this.authService.revokeToken(userId);
-        res.clearCookie('access_token', COOKIE_OPTIONS);
-        res.clearCookie('refresh_token', COOKIE_OPTIONS);
+        res.clearCookie("access_token", COOKIE_OPTIONS);
+        res.clearCookie("refresh_token", COOKIE_OPTIONS);
         return {
-            message: 'logged out',
+            message: "logged out",
         };
     }
 };
 exports.AuthController = AuthController;
 __decorate([
     (0, common_1.UseGuards)(local_guard_1.LocalAuthGuard),
-    (0, common_1.Post)('login'),
+    (0, common_1.Post)("login"),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Res)({ passthrough: true })),
     __metadata("design:type", Function),
@@ -90,22 +85,22 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
 __decorate([
-    (0, common_1.Post)('signup'),
+    (0, common_1.Post)("signup"),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [create_user_dto_1.CreateUserDto]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "signUp", null);
 __decorate([
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('google')),
-    (0, common_1.Get)('google'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("google")),
+    (0, common_1.Get)("google"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "googleLogin", null);
 __decorate([
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('google')),
-    (0, common_1.Get)('callback/google'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("google")),
+    (0, common_1.Get)("callback/google"),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Res)({ passthrough: true })),
     __metadata("design:type", Function),
@@ -114,7 +109,7 @@ __decorate([
 ], AuthController.prototype, "googleCallback", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_rt_guard_1.RtJwtAuthGuard),
-    (0, common_1.Get)('refresh'),
+    (0, common_1.Get)("refresh"),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Res)({ passthrough: false })),
     __metadata("design:type", Function),
@@ -123,7 +118,7 @@ __decorate([
 ], AuthController.prototype, "refresh", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_rt_guard_1.RtJwtAuthGuard),
-    (0, common_1.Get)('logout'),
+    (0, common_1.Get)("logout"),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Res)({ passthrough: true })),
     __metadata("design:type", Function),
@@ -131,7 +126,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "logout", null);
 exports.AuthController = AuthController = __decorate([
-    (0, common_1.Controller)('auth'),
+    (0, common_1.Controller)("auth"),
     __metadata("design:paramtypes", [auth_service_1.AuthService])
 ], AuthController);
 //# sourceMappingURL=auth.controller.js.map
